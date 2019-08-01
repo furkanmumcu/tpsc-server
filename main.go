@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,5 +21,11 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"user": name})
 	})
 
-	r.Run(":9191")
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "9191"
+	}
+
+	r.Run(":" + port)
 }
