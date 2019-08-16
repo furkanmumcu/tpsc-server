@@ -40,22 +40,11 @@ func dbFuncCreatePassanger(db *sql.DB) gin.HandlerFunc {
 		fmt.Println(id + name + vehicle + isOk)
 
 		sqlStatement := "INSERT INTO passanger VALUES ($1, $2, $3, $4)"
-		/*if _, err := db.Exec(sqlStatement, id, name, vehicle, isOk); err != nil {
+		if _, err := db.Exec(sqlStatement, id, name, vehicle, isOk); err != nil {
 			c.String(http.StatusInternalServerError,
 				fmt.Sprintf("Error creating database table: %q", err))
 			return
-		}*/
-
-		row := db.QueryRow(sqlStatement, id, name, vehicle, isOk)
-		passanger := Passanger{}
-		err := row.Scan(&passanger.Id, &passanger.Name, &passanger.Vehicle, &passanger.IsOk)
-
-		if err != nil {
-			c.String(http.StatusInternalServerError,
-				fmt.Sprintf("Error %q", err))
-			return
 		}
-
 		c.String(http.StatusOK, "1")
 	}
 }
@@ -93,6 +82,21 @@ func dbFuncGetPassanger(db *sql.DB) gin.HandlerFunc {
 	}
 }
 
+func dbFuncGetCount(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		sqlStatement := "SELECT COUNT(*) FROM passanger"
+		row := db.QueryRow(sqlStatement)
+		var count int
+		err := row.Scan(&count)
+		if err != nil {
+			c.String(http.StatusInternalServerError,
+				fmt.Sprintf("Error %q", err))
+			return
+		}
+
+	}
+}
+
 func main() {
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
@@ -115,7 +119,7 @@ func main() {
 		r.GET("/createDB", dbFuncCreateDB(db))
 		r.GET("/createPassanger/:id/:name/:vehicle", dbFuncCreatePassanger(db))
 		r.GET("/getPassanger/:id/", dbFuncGetPassanger(db))
-
+		r.GET("/getCount/", dbFuncGetCount(db))
 	}
 
 	port := os.Getenv("PORT")
