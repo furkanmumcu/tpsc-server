@@ -93,6 +93,7 @@ func dbFuncGetCount(db *sql.DB) gin.HandlerFunc {
 				fmt.Sprintf("Error %q", err))
 			return
 		}
+		fmt.Println(count)
 		c.String(http.StatusOK, string(count))
 	}
 }
