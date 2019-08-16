@@ -13,6 +13,7 @@ import (
 )
 
 type Passanger struct {
+	Id      string
 	Name    string
 	Vehicle string
 	IsOk    string
@@ -46,8 +47,8 @@ func dbFuncCreatePassanger(db *sql.DB) gin.HandlerFunc {
 		}*/
 
 		row := db.QueryRow(sqlStatement, id, name, vehicle, isOk)
-		created := Passanger{}
-		err := row.Scan(&created.Name)
+		passanger := Passanger{}
+		err := row.Scan(&passanger.Id, &passanger.Name, &passanger.Vehicle, &passanger.IsOk)
 
 		if err != nil {
 			c.String(http.StatusInternalServerError,
@@ -75,7 +76,7 @@ func dbFuncGetPassanger(db *sql.DB) gin.HandlerFunc {
 
 		passanger := Passanger{}
 		row := db.QueryRow(sqlStatement, id)
-		err := row.Scan(&passanger.Name)
+		err := row.Scan(&passanger.Id, &passanger.Name, &passanger.Vehicle, &passanger.IsOk)
 
 		if err != nil {
 			c.String(http.StatusInternalServerError,
