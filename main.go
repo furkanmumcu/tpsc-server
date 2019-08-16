@@ -14,7 +14,7 @@ import (
 func dbFuncCreate(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//createDb if not exist
-		if _, err := db.Exec("CREATE TABLE IF NOT EXISTS passanger (id varchar(255),name varchar(255),vehicle varchar(255), isOk varchar(255))"); err != nil {
+		if _, err := db.Exec("CREATE TABLE IF NOT EXISTS passanger (id varchar(255),name varchar(255),vehicle varchar(255), isOk varchar(255), primary key(id))"); err != nil {
 			c.String(http.StatusInternalServerError,
 				fmt.Sprintf("Error creating database table: %q", err))
 			return
