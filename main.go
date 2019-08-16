@@ -11,7 +11,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func dbFuncCreate(db *sql.DB) gin.HandlerFunc {
+func dbFuncCreateDB(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//createDb if not exist
 		if _, err := db.Exec("CREATE TABLE IF NOT EXISTS passanger (id varchar(255),name varchar(255),vehicle varchar(255), isOk varchar(255), primary key(id))"); err != nil {
@@ -19,6 +19,25 @@ func dbFuncCreate(db *sql.DB) gin.HandlerFunc {
 				fmt.Sprintf("Error creating database table: %q", err))
 			return
 		}
+	}
+}
+
+func dbFuncCreatePassanger(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		name := c.Param("name")
+		vehicle := c.Param("vehicle")
+		isOk := "false"
+
+		fmt.Println(id + name + vehicle + isOk)
+
+		sqlStatement := "INSERT INTO passanger VALUES ($1, $2, $3, $4)"
+		if _, err := db.Exec(sqlStatement, id, name, vehicle, isOk); err != nil {
+			c.String(http.StatusInternalServerError,
+				fmt.Sprintf("Error creating database table: %q", err))
+			return
+		}
+		c.String(http.StatusOK, "1")
 	}
 }
 
@@ -41,7 +60,9 @@ func main() {
 			log.Fatalf("Error opening database: %q", err)
 		}
 
-		r.GET("/createDB", dbFuncCreate(db))
+		r.GET("/createDB", dbFuncCreateDB(db))
+		r.GET("/createPassanger/:id/:name/:vehicle", dbFuncCreatePassanger(db))
+
 	}
 
 	port := os.Getenv("PORT")
