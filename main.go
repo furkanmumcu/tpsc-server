@@ -36,22 +36,23 @@ func dbFuncCreatePassanger(db *sql.DB) gin.HandlerFunc {
 		vehicle := c.Param("vehicle")
 		isOk := "false"
 
-		tx, err := db.Begin()
-		if err != nil {
-			c.String(http.StatusInternalServerError,
-				fmt.Sprintf("Error creating database table: %q", err))
-			return
-		}
-
 		fmt.Println(id + name + vehicle + isOk)
 
 		sqlStatement := "INSERT INTO passanger VALUES ($1, $2, $3, $4)"
-		if _, err := tx.Exec(sqlStatement, id, name, vehicle, isOk); err != nil {
+		/*if _, err := db.Exec(sqlStatement, id, name, vehicle, isOk); err != nil {
 			c.String(http.StatusInternalServerError,
 				fmt.Sprintf("Error creating database table: %q", err))
 			return
+		}*/
+
+		row := db.QueryRow(sqlStatement, id, name, vehicle, isOk)
+		var name string
+		err := row.Scan(&name)
+
+		if err != nil {
+			return
 		}
-		tx.Commit()
+
 		c.String(http.StatusOK, "1")
 	}
 }
