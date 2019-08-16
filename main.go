@@ -66,15 +66,22 @@ func dbFuncGetPassanger(db *sql.DB) gin.HandlerFunc {
 		id := c.Param("id")
 
 		sqlStatement := "SELECT * FROM passanger WHERE id = $1"
-		if _, err := db.Exec(sqlStatement, id); err != nil {
-			c.String(http.StatusInternalServerError,
-				fmt.Sprintf("Error creating database table: %q", err))
-			return
-		}
+		/*
+			if _, err := db.Exec(sqlStatement, id); err != nil {
+				c.String(http.StatusInternalServerError,
+					fmt.Sprintf("Error creating database table: %q", err))
+				return
+			}*/
 
 		passanger := Passanger{}
 		row := db.QueryRow(sqlStatement, id)
-		row.Scan(&passanger)
+		err := row.Scan(&passanger)
+
+		if err != nil {
+			c.String(http.StatusInternalServerError,
+				fmt.Sprintf("Error %q", err))
+			return
+		}
 
 		jResult, err := json.Marshal(passanger)
 		if err != nil {
