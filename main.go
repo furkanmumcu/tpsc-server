@@ -46,8 +46,8 @@ func dbFuncCreatePassanger(db *sql.DB) gin.HandlerFunc {
 		}*/
 
 		row := db.QueryRow(sqlStatement, id, name, vehicle, isOk)
-		var name string
-		err := row.Scan(&name)
+		created := Passanger{}
+		err := row.Scan(&created.Name)
 
 		if err != nil {
 			return
