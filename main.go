@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,6 +11,12 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
+
+type Passanger struct {
+	Name    string
+	Vehicle string
+	IsOk    string
+}
 
 func dbFuncCreateDB(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -41,6 +48,32 @@ func dbFuncCreatePassanger(db *sql.DB) gin.HandlerFunc {
 	}
 }
 
+func dbFuncGetPassanger(db *sql.DB) gin.HandlerFunc {
+	//https://yayprogramming.com/mysql-to-struct-in-go-language/
+	//https://kylewbanks.com/blog/query-result-to-map-in-golang
+	return func(c *gin.Context) {
+		id := c.Param("id")
+
+		sqlStatement := "SELECT * FROM passanger WHERE id = $1"
+		if _, err := db.Exec(sqlStatement, id); err != nil {
+			c.String(http.StatusInternalServerError,
+				fmt.Sprintf("Error creating database table: %q", err))
+			return
+		}
+
+		passanger := Passanger{}
+		row := db.QueryRow(sqlStatement, id)
+		row.Scan(&passanger)
+
+		jResult, err := json.Marshal(passanger)
+		if err != nil {
+			return
+		}
+
+		c.String(http.StatusOK, string(jResult))
+	}
+}
+
 func main() {
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
@@ -62,6 +95,7 @@ func main() {
 
 		r.GET("/createDB", dbFuncCreateDB(db))
 		r.GET("/createPassanger/:id/:name/:vehicle", dbFuncCreatePassanger(db))
+		r.GET("/getPassanger/:id/", dbFuncGetPassanger(db))
 
 	}
 
