@@ -75,7 +75,7 @@ func dbFuncGetPassanger(db *sql.DB) gin.HandlerFunc {
 
 		passanger := Passanger{}
 		row := db.QueryRow(sqlStatement, id)
-		err := row.Scan(&passanger)
+		err := row.Scan(&passanger.Name)
 
 		if err != nil {
 			c.String(http.StatusInternalServerError,
