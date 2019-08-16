@@ -50,6 +50,8 @@ func dbFuncCreatePassanger(db *sql.DB) gin.HandlerFunc {
 		err := row.Scan(&created.Name)
 
 		if err != nil {
+			c.String(http.StatusInternalServerError,
+				fmt.Sprintf("Error %q", err))
 			return
 		}
 
