@@ -93,7 +93,7 @@ func dbFuncGetCount(db *sql.DB) gin.HandlerFunc {
 				fmt.Sprintf("Error %q", err))
 			return
 		}
-
+		c.String(http.StatusOK, string(count))
 	}
 }
 
@@ -119,7 +119,7 @@ func main() {
 		r.GET("/createDB", dbFuncCreateDB(db))
 		r.GET("/createPassanger/:id/:name/:vehicle", dbFuncCreatePassanger(db))
 		r.GET("/getPassanger/:id/", dbFuncGetPassanger(db))
-		r.GET("/getCount/", dbFuncGetCount(db))
+		r.GET("/getCount", dbFuncGetCount(db))
 	}
 
 	port := os.Getenv("PORT")
