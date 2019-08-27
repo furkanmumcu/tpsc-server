@@ -7,18 +7,13 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"restGin/db"
+	"restGin/model"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
-
-type Passanger struct {
-	Id      string
-	Name    string
-	Vehicle string
-	IsOk    string
-}
 
 func dbFuncCreateDB(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -46,25 +41,17 @@ func dbFuncCreatePassanger(db *sql.DB) gin.HandlerFunc {
 				fmt.Sprintf("Error creating database table: %q", err))
 			return
 		}
-		c.String(http.StatusOK, "1")
+		c.String(http.StatusOK, "success")
 	}
 }
 
 func dbFuncGetPassanger(db *sql.DB) gin.HandlerFunc {
-	//https://yayprogramming.com/mysql-to-struct-in-go-language/
-	//https://kylewbanks.com/blog/query-result-to-map-in-golang
 	return func(c *gin.Context) {
 		id := c.Param("id")
 
 		sqlStatement := "SELECT * FROM passanger WHERE id = $1"
-		/*
-			if _, err := db.Exec(sqlStatement, id); err != nil {
-				c.String(http.StatusInternalServerError,
-					fmt.Sprintf("Error creating database table: %q", err))
-				return
-			}*/
 
-		passanger := Passanger{}
+		passanger := model.Passanger{}
 		row := db.QueryRow(sqlStatement, id)
 		err := row.Scan(&passanger.Id, &passanger.Name, &passanger.Vehicle, &passanger.IsOk)
 
@@ -112,7 +99,7 @@ func main() {
 	})
 
 	if os.Getenv("DATABASE_URL") != "" {
-		db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+		db, err := db.OpenDB()
 		if err != nil {
 			log.Fatalf("Error opening database: %q", err)
 		}
