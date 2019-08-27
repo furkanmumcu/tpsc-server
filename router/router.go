@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"restGin/db"
+	"tpsc/db"
 
 	"github.com/gin-gonic/gin"
 )

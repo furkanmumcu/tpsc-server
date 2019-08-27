@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"restGin/model"
 	"strconv"
+	"tpsc/model"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"

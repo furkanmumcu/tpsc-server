@@ -1,7 +1,7 @@
 package main
 
 import (
-	"restGin/router"
+	"tpsc/router"
 )
 
 func main() {

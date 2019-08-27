@@ -1,1 +1,1 @@
-web: restGin
+web: tpsc
