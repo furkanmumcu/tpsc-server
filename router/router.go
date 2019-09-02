@@ -25,6 +25,7 @@ func Start() {
 		r.GET("/createPassanger/:id/:name/:vehicle", db.CreatePassanger(dbase))
 		r.GET("/getPassanger/:id/", db.GetPassanger(dbase))
 		r.GET("/getCount", db.GetCount(dbase))
+		r.GET("/getAllPassangers", db.GetAllPassangers(dbase))
 	}
 
 	port := os.Getenv("PORT")

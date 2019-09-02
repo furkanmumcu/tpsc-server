@@ -85,3 +85,36 @@ func GetCount(db *sql.DB) gin.HandlerFunc {
 		c.String(http.StatusOK, strconv.Itoa(count))
 	}
 }
+
+func GetAllPassangers(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		sqlStatement := "SELECT * FROM passanger"
+		rows, err := db.Query(sqlStatement)
+		if err != nil {
+			c.String(http.StatusInternalServerError,
+				fmt.Sprintf("Error %q", err))
+			return
+		}
+
+		defer rows.Close()
+
+		var passangers []model.Passanger
+		for rows.Next() {
+			passanger := model.Passanger{}
+			err := rows.Scan(&passanger.Id, &passanger.Name, &passanger.Vehicle, &passanger.IsOk)
+			if err != nil {
+				c.String(http.StatusInternalServerError,
+					fmt.Sprintf("Error %q", err))
+				return
+			}
+			passangers = append(passangers, passanger)
+		}
+
+		jResult, err := json.Marshal(passangers)
+		if err != nil {
+			return
+		}
+
+		c.String(http.StatusOK, string(jResult))
+	}
+}
