@@ -12,10 +12,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func dummy() {
-	fmt.Println("")
-}
-
 func CreateDB(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//createDb if not exist
@@ -32,7 +28,7 @@ func CreatePassanger(db *sql.DB) gin.HandlerFunc {
 		id := c.Param("id")
 		name := c.Param("name")
 		vehicle := c.Param("vehicle")
-		isOk := "false"
+		isOk := c.Param("isOk")
 
 		fmt.Println(id + name + vehicle + isOk)
 
