@@ -37,11 +37,8 @@ func CreatePassanger(db *sql.DB) gin.HandlerFunc {
 		fmt.Println(id + name + vehicle + isOk)
 
 		sqlStatement := "INSERT INTO passanger VALUES ($1, $2, $3, $4)"
-		if _, err := db.Exec(sqlStatement, id, name, vehicle, isOk); err != nil {
-			c.String(http.StatusInternalServerError,
-				fmt.Sprintf("Error creating database table: %q", err))
-			return
-		}
+		_, err := db.Exec(sqlStatement, id, name, vehicle, isOk)
+		handleError(c, err)
 		c.String(http.StatusOK, "success")
 	}
 }
@@ -55,17 +52,10 @@ func GetPassanger(db *sql.DB) gin.HandlerFunc {
 		passanger := model.Passanger{}
 		row := db.QueryRow(sqlStatement, id)
 		err := row.Scan(&passanger.Id, &passanger.Name, &passanger.Vehicle, &passanger.IsOk)
-
-		if err != nil {
-			c.String(http.StatusInternalServerError,
-				fmt.Sprintf("Error %q", err))
-			return
-		}
+		handleError(c, err)
 
 		jResult, err := json.Marshal(passanger)
-		if err != nil {
-			return
-		}
+		handleError(c, err)
 
 		c.String(http.StatusOK, string(jResult))
 	}
@@ -77,11 +67,7 @@ func GetCount(db *sql.DB) gin.HandlerFunc {
 		row := db.QueryRow(sqlStatement)
 		var count int
 		err := row.Scan(&count)
-		if err != nil {
-			c.String(http.StatusInternalServerError,
-				fmt.Sprintf("Error %q", err))
-			return
-		}
+		handleError(c, err)
 		c.String(http.StatusOK, strconv.Itoa(count))
 	}
 }
@@ -90,11 +76,7 @@ func GetAllPassangers(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sqlStatement := "SELECT * FROM passanger"
 		rows, err := db.Query(sqlStatement)
-		if err != nil {
-			c.String(http.StatusInternalServerError,
-				fmt.Sprintf("Error %q", err))
-			return
-		}
+		handleError(c, err)
 
 		defer rows.Close()
 
@@ -102,19 +84,21 @@ func GetAllPassangers(db *sql.DB) gin.HandlerFunc {
 		for rows.Next() {
 			passanger := model.Passanger{}
 			err := rows.Scan(&passanger.Id, &passanger.Name, &passanger.Vehicle, &passanger.IsOk)
-			if err != nil {
-				c.String(http.StatusInternalServerError,
-					fmt.Sprintf("Error %q", err))
-				return
-			}
+			handleError(c, err)
 			passangers = append(passangers, passanger)
 		}
 
 		jResult, err := json.Marshal(passangers)
-		if err != nil {
-			return
-		}
+		handleError(c, err)
 
 		c.String(http.StatusOK, string(jResult))
+	}
+}
+
+func handleError(c *gin.Context, err error) {
+	if err != nil {
+		c.String(http.StatusInternalServerError,
+			fmt.Sprintf("Error %q", err))
+		return
 	}
 }
