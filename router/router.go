@@ -30,6 +30,7 @@ func Start() {
 		r.GET("/updateStatus/:id/:status", db.UpdateStatus(dbase))
 		r.GET("/updateName/:id/:name", db.UpdateName(dbase))
 		r.GET("/updateVehicle/:id/:vehicle", db.UpdateVehicle(dbase))
+		r.GET("/deletePassanger/:id/", db.DeletePassanger(dbase))
 	}
 
 	port := os.Getenv("PORT")

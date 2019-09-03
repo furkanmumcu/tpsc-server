@@ -151,6 +151,17 @@ func UpdateVehicle(db *sql.DB) gin.HandlerFunc {
 	}
 }
 
+func DeletePassanger(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		sqlStatement := "DELETE FROM passanger WHERE id = $1"
+		_, err := db.Exec(sqlStatement, id)
+		handleError(c, err)
+
+		c.String(http.StatusOK, "deleted")
+	}
+}
+
 func handleError(c *gin.Context, err error) {
 	if err != nil {
 		c.String(http.StatusInternalServerError,
