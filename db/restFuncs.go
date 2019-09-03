@@ -91,6 +91,30 @@ func GetAllPassangers(db *sql.DB) gin.HandlerFunc {
 	}
 }
 
+func GetVehicle(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		vehicle := c.Param("vehicle")
+		sqlStatement := "SELECT * FROM passanger where vehicle = $1"
+		rows, err := db.Query(sqlStatement, vehicle)
+		handleError(c, err)
+
+		defer rows.Close()
+
+		var passangers []model.Passanger
+		for rows.Next() {
+			passanger := model.Passanger{}
+			err := rows.Scan(&passanger.Id, &passanger.Name, &passanger.Vehicle, &passanger.IsOk)
+			handleError(c, err)
+			passangers = append(passangers, passanger)
+		}
+
+		jResult, err := json.Marshal(passangers)
+		handleError(c, err)
+
+		c.String(http.StatusOK, string(jResult))
+	}
+}
+
 func handleError(c *gin.Context, err error) {
 	if err != nil {
 		c.String(http.StatusInternalServerError,
