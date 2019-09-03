@@ -115,6 +115,42 @@ func GetVehicle(db *sql.DB) gin.HandlerFunc {
 	}
 }
 
+func UpdateStatus(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		status := c.Param("status")
+		sqlStatement := "UPDATE passanger SET isOk = $1 where id = $2"
+		_, err := db.Exec(sqlStatement, status, id)
+		handleError(c, err)
+
+		c.String(http.StatusOK, "updated status")
+	}
+}
+
+func UpdateName(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.Param("id")
+		name := c.Param("name")
+		sqlStatement := "UPDATE passanger SET name = $1 where id = $2"
+		_, err := db.Exec(sqlStatement, name, id)
+		handleError(c, err)
+
+		c.String(http.StatusOK, "updated name")
+	}
+}
+
+func UpdateVehicle(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		vehicle := c.Param("vehicle")
+		status := c.Param("status")
+		sqlStatement := "UPDATE passanger SET vehicle = $1 where id = $2"
+		_, err := db.Exec(sqlStatement, status, vehicle)
+		handleError(c, err)
+
+		c.String(http.StatusOK, "updated vehicle")
+	}
+}
+
 func handleError(c *gin.Context, err error) {
 	if err != nil {
 		c.String(http.StatusInternalServerError,
