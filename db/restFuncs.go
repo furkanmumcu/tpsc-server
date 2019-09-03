@@ -142,9 +142,9 @@ func UpdateName(db *sql.DB) gin.HandlerFunc {
 func UpdateVehicle(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
-		status := c.Param("status")
+		vehicle := c.Param("vehicle")
 		sqlStatement := "UPDATE passanger SET vehicle = $1 where id = $2"
-		_, err := db.Exec(sqlStatement, status, id)
+		_, err := db.Exec(sqlStatement, vehicle, id)
 		handleError(c, err)
 
 		c.String(http.StatusOK, "updated vehicle")
