@@ -11,6 +11,8 @@ import (
 
 func Start() {
 	r := gin.Default()
+	r.Use(security())
+
 	r.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "it works!!!")
 	})
@@ -41,4 +43,29 @@ func Start() {
 
 	r.Run(":" + port)
 
+}
+
+func security() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		requiredToken := os.Getenv("API_TOKEN")
+		if requiredToken == "" {
+			requiredToken = "someToken"
+		}
+
+		token := c.Request.Header.Get("api_token")
+		log.Println("reqToken: " + requiredToken)
+		log.Println("recToken: " + token)
+
+		if token == "" || token != requiredToken {
+			respondWithError(c, 401, "git burdan :(")
+			return
+		}
+
+		c.Next()
+
+	}
+}
+
+func respondWithError(c *gin.Context, code int, message interface{}) {
+	c.AbortWithStatusJSON(code, gin.H{"error": message})
 }
